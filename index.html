@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Content Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f8fc;
+  --surface: #ffffff;
+  --surface2: #f0f2f9;
+  --border: #e4e7f0;
+  --text: #0f1117;
+  --text2: #5a6074;
+  --text3: #9ba3b8;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --accent-soft: #eff4ff;
+  --accent-soft2: #dbeafe;
+  --green: #16a34a;
+  --green-soft: #dcfce7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
+  --yellow: #d97706;
+  --yellow-soft: #fef3c7;
+  --shadow: 0 1px 3px rgba(15,17,23,0.08), 0 4px 16px rgba(15,17,23,0.04);
+  --shadow-md: 0 4px 12px rgba(15,17,23,0.1), 0 1px 4px rgba(15,17,23,0.06);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+[data-theme="dark"] {
+  --bg: #0d0f14;
+  --surface: #161921;
+  --surface2: #1e2230;
+  --border: #252a38;
+  --text: #f0f2f9;
+  --text2: #9ba3b8;
+  --text3: #5a6074;
+  --accent: #3b82f6;
+  --accent2: #2563eb;
+  --accent-soft: #1e2a45;
+  --accent-soft2: #1e3a6e;
+  --green-soft: #14290e;
+  --red-soft: #2d1212;
+  --yellow-soft: #2d1f06;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  text-decoration: none;
+}
+.logo-dot {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.date-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+}
+.date-badge input[type="date"] {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.35); }
+.btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--border); color: var(--text); }
+.btn-danger { background: var(--red-soft); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: white; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.icon-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--text2);
+  transition: all .2s;
+  font-size: 16px;
+}
+.icon-btn:hover { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+
+/* ── MAIN ── */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.stat-label { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.stat-blue .stat-value { color: var(--accent); }
+.stat-green .stat-value { color: var(--green); }
+.stat-yellow .stat-value { color: var(--yellow); }
+.stat-red .stat-value { color: var(--red); }
+
+/* ── PROGRESS ── */
+.progress-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.progress-title { font-size: 14px; font-weight: 700; }
+.progress-pct { font-size: 14px; font-weight: 800; color: var(--accent); font-family: 'DM Mono', monospace; }
+.progress-track {
+  height: 10px;
+  background: var(--surface2);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  border-radius: 100px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+}
+
+/* ── SECTION CARDS ── */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.section-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+.icon-blue { background: var(--accent-soft2); }
+.icon-green { background: var(--green-soft); }
+.icon-yellow { background: var(--yellow-soft); }
+.icon-red { background: var(--red-soft); }
+
+/* ── CONTENT GRID ── */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+.content-col {
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  transition: border-color .2s, background .2s;
+  position: relative;
+}
+.content-col.done {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+.content-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.content-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.check-btn {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  transition: all .2s;
+  color: transparent;
+}
+.check-btn.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.content-col.done .content-num { color: var(--green); }
+
+/* ── FORM ELEMENTS ── */
+textarea, input[type="text"], input[type="time"] {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  resize: none;
+  transition: border-color .2s;
+  outline: none;
+}
+textarea { min-height: 80px; }
+textarea:focus, input[type="text"]:focus, input[type="time"]:focus {
+  border-color: var(--accent);
+}
+textarea::placeholder, input::placeholder { color: var(--text3); }
+
+/* Upload area */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--surface);
+}
+.upload-area:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.upload-area img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; }
+.upload-area input { display: none; }
+
+/* Time */
+.time-input-wrap { position: relative; }
+.time-input-wrap input[type="time"] { padding-left: 32px; }
+.time-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; pointer-events: none; }
+
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.badge-pending { background: var(--yellow-soft); color: var(--yellow); }
+.badge-done { background: var(--green-soft); color: var(--green); }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.toolbar-left { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
+.toolbar-right { display: flex; gap: 8px; }
+
+/* ── TOAST ── */
+.toast-wrap {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  animation: toastIn .3s cubic-bezier(.2,.8,.4,1) forwards;
+  pointer-events: auto;
+}
+.toast.out { animation: toastOut .3s ease forwards; }
+@keyframes toastIn { from { transform: translateY(20px) scale(.95); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes toastOut { to { transform: translateY(20px) scale(.95); opacity:0; } }
+
+/* ── MODAL (PDF preview) ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.2);
+  transform: scale(.96);
+  transition: transform .3s;
+}
+.modal-overlay.open .modal { transform: none; }
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 1100px) {
+  .content-grid { grid-template-columns: repeat(3, 1fr); }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width: 640px) {
+  .content-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .header-inner { gap: 8px; }
+  .date-badge { display: none; }
+  .main { padding: 16px 14px 80px; }
+  .section-card { padding: 16px; }
+}
+@media(max-width: 400px) {
+  .content-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 50;
+}
+.fab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  transition: all .2s;
+}
+.fab-save { background: var(--accent); color: white; }
+.fab-save:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(37,99,235,.4); }
+.fab-pdf { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+.fab-pdf:hover { background: var(--surface2); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-dot">📅</div>
+      Daily Content
+    </div>
+    <div class="header-right">
+      <div class="date-badge">
+        📆 <input type="date" id="tanggal">
+      </div>
+      <div class="icon-btn" onclick="toggleTheme()" title="Toggle Dark Mode" id="themeBtn">🌙</div>
+      <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importData(this)">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('fileInput').click()">📂 Buka File</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmReset()">🗑️ Reset</button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card stat-blue">
+      <div class="stat-label">Target Harian</div>
+      <div class="stat-value" id="statTarget">6</div>
+      <div class="stat-sub">konten per hari</div>
+    </div>
+    <div class="stat-card stat-green">
+      <div class="stat-label">Selesai</div>
+      <div class="stat-value" id="statDone">0</div>
+      <div class="stat-sub">konten terkomplet</div>
+    </div>
+    <div class="stat-card stat-yellow">
+      <div class="stat-label">Sisa</div>
+      <div class="stat-value" id="statLeft">6</div>
+      <div class="stat-sub">konten belum selesai</div>
+    </div>
+    <div class="stat-card stat-red">
+      <div class="stat-label">Progress</div>
+      <div class="stat-value" id="statPct">0%</div>
+      <div class="stat-sub">dari target harian</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <div class="progress-title">🎯 Progress Harian</div>
+      <div class="progress-pct" id="progressText">0 / 6 selesai</div>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-labels">
+      <span>0%</span>
+      <span id="pctLabel">0%</span>
+      <span>100%</span>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="btn btn-primary btn-sm" onclick="saveToLocal(); showToast('✅ Tersimpan otomatis ke browser!')">💾 Simpan</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">📤 Export JSON</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportPDF()">📄 Export PDF</button>
+    </div>
+    <div class="toolbar-right">
+      <div style="font-size:12px; color:var(--text3); font-style:italic; padding: 6px 0;" id="statusText">💡 Auto-save aktif</div>
+    </div>
+  </div>
+
+  <!-- SECTION: JADWAL KONTEN -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-blue">✅</div>
+        Target & Ide Konten
+      </div>
+      <span style="font-size:12px; color:var(--text3);">Centang jika selesai</span>
+    </div>
+    <div class="content-grid" id="ideGrid">
+      <!-- Generated by JS -->
+    </div>
+  </div>
+
+  <!-- SECTION: THUMBNAIL -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-yellow">🖼️</div>
+        Thumbnail Konten
+      </div>
+    </div>
+    <div class="content-grid" id="thumbGrid"></div>
+  </div>
+
+  <!-- SECTION: CAPTION -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-green">📝</div>
+        Caption Konten
+      </div>
+    </div>
+    <div class="content-grid" id="capGrid"></div>
+  </div>
+
+  <!-- SECTION: JAM UPLOAD -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-red">⏰</div>
+        Jadwal Upload
+      </div>
+    </div>
+    <div class="content-grid" id="jamGrid"></div>
+  </div>
+
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-title">🗑️ Reset Data Hari Ini?</div>
+    <div class="modal-sub">Semua data untuk tanggal ini akan dihapus. Tindakan ini tidak bisa dibatalkan.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-danger" onclick="doReset()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const N = 6;
+let thumbImages = {}; // {1: base64}
+
+// ── BUILD DOM ──
+function buildGrids() {
+  const ideG = document.getElementById('ideGrid');
+  const thumbG = document.getElementById('thumbGrid');
+  const capG = document.getElementById('capGrid');
+  const jamG = document.getElementById('jamGrid');
+
+  for (let i = 1; i <= N; i++) {
+    // IDE
+    ideG.innerHTML += `
+      <div class="content-col" id="col-ide-${i}">
+        <div class="content-col-header">
+          <span class="content-num">Konten ${i}</span>
+          <div class="check-btn" id="check-${i}" onclick="toggleCheck(${i})" title="Tandai selesai"></div>
+        </div>
+        <textarea id="ide${i}" placeholder="Tulis ide konten ${i}..." onchange="saveToLocal()" oninput="saveToLocal()"></textarea>
+        <div class="status-badge badge-pending" id="badge-${i}">⏳ Pending</div>
+      </div>`;
+
+    // THUMB
+    thumbG.innerHTML += `
+      <div class="content-col">
+        <div class="content-col-header">
+          <span class="content-num">Thumbnail ${i}</span>
+        </div>
+        <div class="upload-area" id="uploadArea${i}" onclick="document.getElementById('thumbFile${i}').click()">
+          <div id="thumbPreview${i}">🖼️<br><span style="font-size:10px;">Klik upload gambar</span></div>
+          <input type="file" id="thumbFile${i}" accept="image/*" onchange="previewThumb(${i}, this)">
+        </div>
+        <input type="text" id="thumb${i}" placeholder="Nama / status thumbnail..." style="margin-top:8px;" onchange="saveToLocal()" oninput="saveToLocal()">
+      </div>`;
+
+    // CAPTION
+    capG.innerHTML += `
+      <div class="content-col">
+        <div class="content-col-header">
+          <span class="content-num">Caption ${i}</span>
+        </div>
+        <textarea id="cap${i}" placeholder="Tulis caption konten ${i}..." style="min-height:100px;" onchange="saveToLocal()" oninput="saveToLocal()"></textarea>
+      </div>`;
+
+    // JAM
+    jamG.innerHTML += `
+      <div class="content-col">
+        <div class="content-col-header">
+          <span class="content-num">Upload ${i}</span>
+        </div>
+        <div class="time-input-wrap">
+          <span class="time-icon">🕐</span>
+          <input type="time" id="jam${i}" onchange="saveToLocal()">
+        </div>
+        <input type="text" id="jamStatus${i}" placeholder="Status upload..." style="margin-top:8px;" onchange="saveToLocal()" oninput="saveToLocal()">
+      </div>`;
+  }
+}
+
+// ── CHECK ──
+function toggleCheck(i) {
+  const btn = document.getElementById('check-' + i);
+  const col = document.getElementById('col-ide-' + i);
+  const badge = document.getElementById('badge-' + i);
+  const isChecked = btn.classList.toggle('checked');
+  btn.textContent = isChecked ? '✓' : '';
+  col.classList.toggle('done', isChecked);
+  badge.className = 'status-badge ' + (isChecked ? 'badge-done' : 'badge-pending');
+  badge.textContent = isChecked ? '✅ Selesai' : '⏳ Pending';
+  saveToLocal();
+  updateProgress();
+}
+
+function setCheck(i, val) {
+  const btn = document.getElementById('check-' + i);
+  const col = document.getElementById('col-ide-' + i);
+  const badge = document.getElementById('badge-' + i);
+  btn.classList.toggle('checked', val);
+  btn.textContent = val ? '✓' : '';
+  col.classList.toggle('done', val);
+  badge.className = 'status-badge ' + (val ? 'badge-done' : 'badge-pending');
+  badge.textContent = val ? '✅ Selesai' : '⏳ Pending';
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  let done = 0;
+  for (let i = 1; i <= N; i++) {
+    if (document.getElementById('check-' + i).classList.contains('checked')) done++;
+  }
+  const pct = Math.round((done / N) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + ' / ' + N + ' selesai';
+  document.getElementById('pctLabel').textContent = pct + '%';
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statLeft').textContent = N - done;
+  document.getElementById('statPct').textContent = pct + '%';
+}
+
+// ── THUMB PREVIEW ──
+function previewThumb(i, input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    thumbImages[i] = e.target.result;
+    const prev = document.getElementById('thumbPreview' + i);
+    prev.innerHTML = `<img src="${e.target.result}" alt="thumb"><br><span style="font-size:10px;">Klik ganti gambar</span>`;
+    saveToLocal();
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ── STORAGE ──
+const dateInput = document.getElementById('tanggal');
+
+function getKey() { return 'dcpro_' + dateInput.value; }
+
+function saveToLocal() {
+  const data = { tanggal: dateInput.value, konten: [], thumbImages };
+  for (let i = 1; i <= N; i++) {
+    data.konten.push({
+      check: document.getElementById('check-' + i).classList.contains('checked'),
+      ide: document.getElementById('ide' + i).value,
+      thumb: document.getElementById('thumb' + i).value,
+      cap: document.getElementById('cap' + i).value,
+      jam: document.getElementById('jam' + i).value,
+      jamStatus: document.getElementById('jamStatus' + i).value,
+    });
+  }
+  localStorage.setItem(getKey(), JSON.stringify(data));
+  document.getElementById('statusText').textContent = '✅ Tersimpan — ' + new Date().toLocaleTimeString('id-ID');
+  updateProgress();
+}
+
+function loadFromLocal() {
+  thumbImages = {};
+  const saved = localStorage.getItem(getKey());
+  for (let i = 1; i <= N; i++) {
+    setCheck(i, false);
+    document.getElementById('ide' + i).value = '';
+    document.getElementById('thumb' + i).value = '';
+    document.getElementById('cap' + i).value = '';
+    document.getElementById('jam' + i).value = '';
+    document.getElementById('jamStatus' + i).value = '';
+    document.getElementById('thumbPreview' + i).innerHTML = '🖼️<br><span style="font-size:10px;">Klik upload gambar</span>';
+  }
+  if (!saved) { updateProgress(); return; }
+  const data = JSON.parse(saved);
+  thumbImages = data.thumbImages || {};
+  for (let i = 1; i <= N; i++) {
+    const k = data.konten[i - 1];
+    if (!k) continue;
+    setCheck(i, k.check);
+    document.getElementById('ide' + i).value = k.ide || '';
+    document.getElementById('thumb' + i).value = k.thumb || '';
+    document.getElementById('cap' + i).value = k.cap || '';
+    document.getElementById('jam' + i).value = k.jam || '';
+    document.getElementById('jamStatus' + i).value = k.jamStatus || '';
+    if (thumbImages[i]) {
+      document.getElementById('thumbPreview' + i).innerHTML = `<img src="${thumbImages[i]}" alt="thumb"><br><span style="font-size:10px;">Klik ganti gambar</span>`;
+    }
+  }
+  updateProgress();
+}
+
+// ── EXPORT JSON ──
+function exportData() {
+  const saved = localStorage.getItem(getKey());
+  if (!saved) { showToast('⚠️ Tidak ada data untuk disimpan!', 'warn'); return; }
+  const blob = new Blob([saved], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'konten-' + dateInput.value + '.json';
+  a.click();
+  showToast('💾 File JSON berhasil diunduh!');
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.tanggal) {
+        dateInput.value = data.tanggal;
+        localStorage.setItem(getKey(), e.target.result);
+        loadFromLocal();
+        showToast('📂 File berhasil dibuka!');
+      }
+    } catch { showToast('❌ File tidak valid!', 'error'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ── EXPORT PDF ──
+function exportPDF() {
+  const date = dateInput.value;
+  let html = `
+  <html><head><meta charset="UTF-8">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; color: #111; padding: 32px; font-size: 13px; }
+    h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .sub { color: #666; font-size: 13px; margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+    .card { border: 1.5px solid #e4e7f0; border-radius: 10px; padding: 14px; }
+    .card-num { font-size: 11px; font-weight: 700; color: #9ba3b8; text-transform: uppercase; margin-bottom: 6px; }
+    .card.done { border-color: #16a34a; background: #f0fdf4; }
+    .label { font-weight: 700; font-size: 11px; color: #5a6074; margin: 8px 0 2px; text-transform: uppercase; }
+    .val { font-size: 12px; color: #111; }
+    h2 { font-size: 14px; font-weight: 700; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #e4e7f0; }
+    .prog { background: #e4e7f0; border-radius: 100px; height: 8px; margin-bottom: 16px; overflow: hidden; }
+    .prog-fill { height: 100%; background: #2563eb; border-radius: 100px; }
+  </style></head><body>
+  <h1>📅 Daily Content Progress</h1>
+  <div class="sub">Tanggal: ${date} &nbsp;|&nbsp; Diekspor: ${new Date().toLocaleString('id-ID')}</div>`;
+
+  let done = 0;
+  for (let i = 1; i <= N; i++) {
+    if (document.getElementById('check-' + i).classList.contains('checked')) done++;
+  }
+  const pct = Math.round((done / N) * 100);
+  html += `<div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+  html += `<p style="margin-bottom:16px;font-size:13px;">Progress: <b>${done} / ${N}</b> konten selesai (${pct}%)</p>`;
+  html += `<h2>Konten Harian</h2><div class="grid">`;
+
+  for (let i = 1; i <= N; i++) {
+    const isDone = document.getElementById('check-' + i).classList.contains('checked');
+    const ide = document.getElementById('ide' + i).value || '-';
+    const thumb = document.getElementById('thumb' + i).value || '-';
+    const cap = document.getElementById('cap' + i).value || '-';
+    const jam = document.getElementById('jam' + i).value || '-';
+    const js = document.getElementById('jamStatus' + i).value || '-';
+    html += `<div class="card ${isDone ? 'done' : ''}">
+      <div class="card-num">Konten ${i} ${isDone ? '✅' : '⏳'}</div>
+      <div class="label">Ide:</div><div class="val">${ide}</div>
+      <div class="label">Thumbnail:</div><div class="val">${thumb}</div>
+      <div class="label">Caption:</div><div class="val">${cap}</div>
+      <div class="label">Jam Upload:</div><div class="val">${jam}</div>
+      <div class="label">Status:</div><div class="val">${js}</div>
+    </div>`;
+  }
+  html += `</div></body></html>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => { w.print(); }, 500);
+}
+
+// ── RESET ──
+function confirmReset() {
+  document.getElementById('resetModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('resetModal').classList.remove('open');
+}
+function doReset() {
+  localStorage.removeItem(getKey());
+  loadFromLocal();
+  closeModal();
+  showToast('🗑️ Data hari ini telah direset.');
+}
+
+// ── THEME ──
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('dcpro_theme', isDark ? '' : 'dark');
+}
+
+// ── TOAST ──
+function showToast(msg, type = 'ok') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.background = type === 'error' ? '#dc2626' : type === 'warn' ? '#d97706' : 'var(--text)';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('out');
+    setTimeout(() => t.remove(), 300);
+  }, 2800);
+}
+
+// ── INIT ──
+buildGrids();
+
+// Date
+const today = new Date();
+const local = today.toLocaleDateString('en-CA');
+dateInput.value = local;
+
+// Theme
+const savedTheme = localStorage.getItem('dcpro_theme') || '';
+document.documentElement.setAttribute('data-theme', savedTheme);
+if (savedTheme === 'dark') document.getElementById('themeBtn').textContent = '☀️';
+
+// Load
+loadFromLocal();
+
+// Date change
+dateInput.addEventListener('change', () => { loadFromLocal(); });
+
+// Close modal on overlay click
+document.getElementById('resetModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Auto-save every 30s
+setInterval(() => {
+  saveToLocal();
+}, 30000);
+</script>
+</body>
+</html>
